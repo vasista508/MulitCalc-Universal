@@ -1,0 +1,1572 @@
+MulitCalc-Universal
+<!DOCTYPE html>
+<!--
+  ====================================================================================
+  MultiCalc Universal - Copyright (c) 2026. All Rights Reserved.
+  Protected under Indian Copyright Act, 1957 (Section 2(d)(vi) - Computer Generated Works).
+  Authored via directed human specification, design selection, and parameter arrangement.
+  ====================================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MultiCalc Universal</title>
+  <style>
+    :root {
+      --bg-dark: #070913;
+      --card-bg: rgba(15, 23, 42, 0.65);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --accent-cyan: #06b6d4;
+      --accent-purple: #a855f7;
+      --accent-pink: #ec4899;
+      --physics-color: #d946ef; /* Exclusive Electric Violet for Physics */
+      --cs-color: #3b82f6;      /* Electric Blue for Computer Science */
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+      padding: 20px 10px;
+      position: relative;
+    }
+
+    /* Cosmic Background Canvas */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Main Container */
+    .app-container {
+      width: 100%;
+      max-width: 950px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--physics-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .author-tag {
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 10px;
+      border-radius: 20px;
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-icon {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .btn-complain {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.4));
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .btn-complain:hover {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.6));
+      color: #fff;
+    }
+
+    /* Navigation Tabs */
+    .tab-nav {
+      display: flex;
+      overflow-x: auto;
+      padding: 12px 18px;
+      gap: 8px;
+      border-bottom: 1px solid var(--card-border);
+      scrollbar-width: none;
+    }
+
+    .tab-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+    }
+
+    /* EXCLUSIVE PHYSICS TAB STYLING */
+    .tab-btn[data-tab="physics"] {
+      border-color: rgba(217, 70, 239, 0.3);
+      color: #e879f9;
+    }
+
+    .tab-btn[data-tab="physics"]:hover {
+      background: rgba(217, 70, 239, 0.15);
+    }
+
+    .tab-btn[data-tab="physics"].active {
+      background: rgba(217, 70, 239, 0.25) !important;
+      border-color: var(--physics-color) !important;
+      color: #f5d0fe !important;
+      box-shadow: 0 0 20px rgba(217, 70, 239, 0.5) !important;
+    }
+
+    /* CS TAB STYLING */
+    .tab-btn[data-tab="cs"].active {
+      background: rgba(59, 130, 246, 0.25);
+      border-color: var(--cs-color);
+      color: #93c5fd;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Content Panels */
+    .tab-panel {
+      display: none;
+      padding: 24px;
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Display Screen */
+    .calc-screen {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: right;
+    }
+
+    .calc-history-text {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      min-height: 22px;
+      word-wrap: break-word;
+    }
+
+    .calc-main-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      word-wrap: break-word;
+      margin-top: 6px;
+    }
+
+    /* Grid Layouts */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .btn-calc {
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-calc:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .btn-calc:active {
+      transform: translateY(0);
+    }
+
+    .btn-op {
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--accent-cyan);
+      border-color: rgba(6, 182, 212, 0.2);
+    }
+
+    .btn-physics-constant {
+      background: rgba(217, 70, 239, 0.15);
+      color: #f5d0fe;
+      border-color: rgba(217, 70, 239, 0.3);
+      font-size: 0.95rem;
+    }
+
+    .btn-physics-constant:hover {
+      background: rgba(217, 70, 239, 0.3);
+      box-shadow: 0 0 12px rgba(217, 70, 239, 0.4);
+    }
+
+    .btn-equals {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--physics-color));
+      color: #fff;
+      border: none;
+      grid-column: span 2;
+      box-shadow: 0 4px 20px rgba(217, 70, 239, 0.3);
+    }
+
+    .btn-clear {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Physics Section Header & Solvers */
+    .physics-header {
+      background: linear-gradient(135deg, rgba(217, 70, 239, 0.15), rgba(168, 85, 247, 0.05));
+      border: 1px solid rgba(217, 70, 239, 0.3);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .physics-header-title {
+      font-weight: 700;
+      color: #f5d0fe;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .physics-solvers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .solver-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(217, 70, 239, 0.25);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .solver-card h4 {
+      color: #f5d0fe;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .solver-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .solver-input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .solver-input-group label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      width: 70px;
+    }
+
+    .solver-input-group input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      outline: none;
+    }
+
+    .solver-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(217, 70, 239, 0.2);
+      border: 1px solid rgba(217, 70, 239, 0.4);
+      color: #f5d0fe;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .solver-btn:hover {
+      background: rgba(217, 70, 239, 0.35);
+    }
+
+    .solver-result {
+      margin-top: 10px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      font-size: 0.95rem;
+      text-align: right;
+    }
+
+    /* CS Section Styling */
+    .cs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .cs-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .cs-card h3 {
+      color: #93c5fd;
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+    }
+
+    .bit-matrix {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .bit-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 8px 0;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .bit-btn.active {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: var(--cs-color);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* Unit Converter UI */
+    .converter-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    select, input[type="text"], input[type="number"], textarea {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .unit-grid-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 6px;
+      margin-top: 16px;
+    }
+
+    .unit-grid-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .unit-grid-item .unit-name {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .unit-grid-item .unit-val {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 2px;
+      word-break: break-all;
+    }
+
+    /* Sign-In Gate Overlay */
+    #auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(7, 9, 19, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+
+    .auth-card h2 {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--physics-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .auth-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .auth-card input {
+      width: 100%;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--physics-color));
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    /* Modal / Drawer */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .history-drawer {
+      position: fixed;
+      top: 0;
+      right: -380px;
+      width: 360px;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--card-border);
+      z-index: 2000;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-drawer.open {
+      right: 0;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 640px) {
+      .calc-grid { grid-template-columns: repeat(4, 1fr); }
+      .converter-controls { grid-template-columns: 1fr; }
+      .history-drawer { width: 100%; right: -100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cosmic Particle & Fluid Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Local Sign-In Gate Overlay -->
+  <div id="auth-overlay">
+    <div class="auth-card">
+      <h2>Welcome to MultiCalc</h2>
+      <p>Enter your email address to unlock session access. No data is recorded or sent externally.</p>
+      <input type="email" id="auth-email-input" placeholder="user@domain.com" required>
+      <button class="btn-primary" onclick="handleSignIn()">Sign In & Unlock</button>
+    </div>
+  </div>
+
+  <!-- Main Web Application -->
+  <div class="app-container">
+    <header>
+      <div class="brand">
+        <span class="brand-title">MultiCalc Universal</span>
+        <span class="author-tag" id="display-creator">By: Creator Name</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon btn-complain" onclick="openModal('complain-modal')">⚠️ Complain</button>
+        <button class="btn-icon" onclick="toggleHistoryDrawer()">📜 History</button>
+        <button class="btn-icon" onclick="openModal('settings-modal')">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="standard" onclick="switchTab('standard')">Standard</button>
+      <button class="tab-btn" data-tab="physics" onclick="switchTab('physics')">⚛️ Physics</button>
+      <button class="tab-btn" data-tab="cs" onclick="switchTab('cs')">💻 Computer Science</button>
+      <button class="tab-btn" data-tab="unit" onclick="switchTab('unit')">📏 Unit Converter</button>
+      <button class="tab-btn" data-tab="finance" onclick="switchTab('finance')">💰 Finance & Health</button>
+    </nav>
+
+    <!-- TAB 1: STANDARD CALCULATOR -->
+    <div id="panel-standard" class="tab-panel active">
+      <div class="calc-screen">
+        <div class="calc-history-text" id="std-history"></div>
+        <div class="calc-main-text" id="std-display">0</div>
+      </div>
+      <div class="calc-grid">
+        <button class="btn-calc btn-clear" onclick="calcInput('AC')">AC</button>
+        <button class="btn-calc" onclick="calcInput('DEL')">DEL</button>
+        <button class="btn-calc btn-op" onclick="calcInput('%')">%</button>
+        <button class="btn-calc btn-op" onclick="calcInput('÷')">÷</button>
+        <button class="btn-calc btn-op" onclick="calcInput('×')">×</button>
+
+        <button class="btn-calc" onclick="calcInput('7')">7</button>
+        <button class="btn-calc" onclick="calcInput('8')">8</button>
+        <button class="btn-calc" onclick="calcInput('9')">9</button>
+        <button class="btn-calc btn-op" onclick="calcInput('-')">-</button>
+        <button class="btn-calc btn-op" onclick="calcInput('x²')">x²</button>
+
+        <button class="btn-calc" onclick="calcInput('4')">4</button>
+        <button class="btn-calc" onclick="calcInput('5')">5</button>
+        <button class="btn-calc" onclick="calcInput('6')">6</button>
+        <button class="btn-calc btn-op" onclick="calcInput('+')">+</button>
+        <button class="btn-calc btn-op" onclick="calcInput('√')">√</button>
+
+        <button class="btn-calc" onclick="calcInput('1')">1</button>
+        <button class="btn-calc" onclick="calcInput('2')">2</button>
+        <button class="btn-calc" onclick="calcInput('3')">3</button>
+        <button class="btn-calc btn-equals" onclick="calcInput('=')">=</button>
+
+        <button class="btn-calc" onclick="calcInput('0')">0</button>
+        <button class="btn-calc" onclick="calcInput('.')">.</button>
+        <button class="btn-calc" onclick="calcInput('±')">±</button>
+      </div>
+    </div>
+
+    <!-- TAB 2: PHYSICS (Renamed from Scientific, styled with Electric Violet) -->
+    <div id="panel-physics" class="tab-panel">
+      <div class="physics-header">
+        <div class="physics-header-title">
+          <span>⚛️ Physics & Quantum Constants Suite</span>
+        </div>
+        <div>
+          <button class="btn-icon" id="angle-mode-btn" onclick="toggleAngleMode()">DEG</button>
+        </div>
+      </div>
+
+      <div class="calc-screen">
+        <div class="calc-history-text" id="physics-history"></div>
+        <div class="calc-main-text" id="physics-display">0</div>
+      </div>
+
+      <!-- Quick Constants Toolbar -->
+      <div style="display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px;">
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('c')" title="Speed of Light (2.998e8 m/s)">c</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('g')" title="Standard Gravity (9.807 m/s²)">g</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('h')" title="Planck Constant (6.626e-34 J s)">h</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('G')" title="Gravitational Constant (6.674e-11)">G</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('k_B')" title="Boltzmann Constant (1.381e-23 J/K)">k_B</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('e')" title="Elementary Charge (1.602e-19 C)">e⁻</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('N_A')" title="Avogadro Constant (6.022e23)">N_A</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('R')" title="Gas Constant (8.314 J/mol K)">R</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('eps0')" title="Vacuum Permittivity">ε₀</button>
+        <button class="btn-calc btn-physics-constant" onclick="insertConstant('mu0')" title="Vacuum Permeability">μ₀</button>
+      </div>
+
+      <div class="calc-grid">
+        <button class="btn-calc btn-op" onclick="calcInput('sin')">sin</button>
+        <button class="btn-calc btn-op" onclick="calcInput('cos')">cos</button>
+        <button class="btn-calc btn-op" onclick="calcInput('tan')">tan</button>
+        <button class="btn-calc btn-clear" onclick="calcInput('AC')">AC</button>
+        <button class="btn-calc" onclick="calcInput('DEL')">DEL</button>
+
+        <button class="btn-calc btn-op" onclick="calcInput('ln')">ln</button>
+        <button class="btn-calc btn-op" onclick="calcInput('log')">log</button>
+        <button class="btn-calc btn-op" onclick="calcInput('π')">π</button>
+        <button class="btn-calc btn-op" onclick="calcInput('ℯ')">ℯ</button>
+        <button class="btn-calc btn-op" onclick="calcInput('÷')">÷</button>
+
+        <button class="btn-calc btn-op" onclick="calcInput('x^y')">x^y</button>
+        <button class="btn-calc" onclick="calcInput('7')">7</button>
+        <button class="btn-calc" onclick="calcInput('8')">8</button>
+        <button class="btn-calc" onclick="calcInput('9')">9</button>
+        <button class="btn-calc btn-op" onclick="calcInput('×')">×</button>
+
+        <button class="btn-calc btn-op" onclick="calcInput('(')">(</button>
+        <button class="btn-calc" onclick="calcInput('4')">4</button>
+        <button class="btn-calc" onclick="calcInput('5')">5</button>
+        <button class="btn-calc" onclick="calcInput('6')">6</button>
+        <button class="btn-calc btn-op" onclick="calcInput('-')">-</button>
+
+        <button class="btn-calc btn-op" onclick="calcInput(')')">)</button>
+        <button class="btn-calc" onclick="calcInput('1')">1</button>
+        <button class="btn-calc" onclick="calcInput('2')">2</button>
+        <button class="btn-calc" onclick="calcInput('3')">3</button>
+        <button class="btn-calc btn-op" onclick="calcInput('+')">+</button>
+
+        <button class="btn-calc btn-op" onclick="calcInput('!')">n!</button>
+        <button class="btn-calc" onclick="calcInput('0')">0</button>
+        <button class="btn-calc" onclick="calcInput('.')">.</button>
+        <button class="btn-calc btn-equals" onclick="calcInput('=')">=</button>
+      </div>
+
+      <!-- Physics Solvers Grid -->
+      <h3 style="margin-top: 24px; color: #f5d0fe;">Formula Solvers</h3>
+      <div class="physics-solvers-grid">
+        <div class="solver-card">
+          <h4>Kinetic Energy (E = ½mv²)</h4>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>Mass (kg):</label><input type="number" id="ke-m" value="10"></div>
+            <div class="solver-input-group"><label>Vel (m/s):</label><input type="number" id="ke-v" value="5"></div>
+          </div>
+          <button class="solver-btn" onclick="solveKineticEnergy()">Calculate Energy</button>
+          <div class="solver-result" id="ke-res">125.00 J</div>
+        </div>
+
+        <div class="solver-card">
+          <h4>Newton's 2nd Law (F = ma)</h4>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>Mass (kg):</label><input type="number" id="f-m" value="12"></div>
+            <div class="solver-input-group"><label>Accel (m/s²):</label><input type="number" id="f-a" value="9.8"></div>
+          </div>
+          <button class="solver-btn" onclick="solveForce()">Calculate Force</button>
+          <div class="solver-result" id="f-res">117.60 N</div>
+        </div>
+
+        <div class="solver-card">
+          <h4>Ohm's Law (V = IR)</h4>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>Current (A):</label><input type="number" id="ohm-i" value="2.5"></div>
+            <div class="solver-input-group"><label>Resist (Ω):</label><input type="number" id="ohm-r" value="10"></div>
+          </div>
+          <button class="solver-btn" onclick="solveOhmsLaw()">Calculate Voltage</button>
+          <div class="solver-result" id="ohm-res">25.00 V</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: COMPUTER SCIENCE -->
+    <div id="panel-cs" class="tab-panel">
+      <div class="cs-grid">
+        <div class="cs-card" style="grid-column: 1 / -1;">
+          <h3>32-Bit Interactive Bitwise Register Matrix</h3>
+          <div class="bit-matrix" id="bit-matrix-container"></div>
+          <div style="display: flex; justify-content: space-between; font-family: monospace; font-size: 0.95rem; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px;">
+            <span>DEC: <strong id="bit-dec-val" style="color:var(--cs-color)">0</strong></span>
+            <span>HEX: <strong id="bit-hex-val" style="color:var(--accent-cyan)">0x00000000</strong></span>
+            <span>BIN: <strong id="bit-bin-val" style="color:var(--physics-color)">00000000 00000000 00000000 00000000</strong></span>
+          </div>
+        </div>
+
+        <div class="cs-card">
+          <h3>Number Base Converter</h3>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>DEC:</label><input type="text" id="cs-dec" value="255" oninput="convertBases('dec')"></div>
+            <div class="solver-input-group"><label>HEX:</label><input type="text" id="cs-hex" value="FF" oninput="convertBases('hex')"></div>
+            <div class="solver-input-group"><label>BIN:</label><input type="text" id="cs-bin" value="11111111" oninput="convertBases('bin')"></div>
+            <div class="solver-input-group"><label>OCT:</label><input type="text" id="cs-oct" value="377" oninput="convertBases('oct')"></div>
+          </div>
+        </div>
+
+        <div class="cs-card">
+          <h3>CIDR Subnet Calculator</h3>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>IP / CIDR:</label><input type="text" id="subnet-ip" value="192.168.1.1/24"></div>
+          </div>
+          <button class="solver-btn" style="background: rgba(59,130,246,0.3); border-color: var(--cs-color); color: #fff;" onclick="calcSubnet()">Calculate Subnet</button>
+          <div style="margin-top: 10px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;" id="subnet-res">
+            <div>Subnet Mask: <strong style="color: var(--cs-color);">255.255.255.0</strong></div>
+            <div>Network IP: <strong style="color: var(--cs-color);">192.168.1.0</strong></div>
+            <div>Usable Hosts: <strong style="color: var(--accent-cyan);">254</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: UNIVERSAL UNIT CONVERTER -->
+    <div id="panel-unit" class="tab-panel">
+      <!-- Smart Query Search Bar -->
+      <div style="margin-bottom: 16px;">
+        <input type="text" id="unit-smart-query" placeholder="Type smart query (e.g. '10 miles to km' or '100 F to C')..." style="width: 100%;" oninput="handleSmartQuery()">
+      </div>
+
+      <div class="converter-controls">
+        <div class="form-group">
+          <label>Category</label>
+          <select id="unit-category" onchange="populateUnitDropdowns()"></select>
+        </div>
+        <div class="form-group">
+          <label>Value</label>
+          <input type="number" id="unit-input-val" value="1" oninput="convertUnits()">
+        </div>
+        <div class="form-group">
+          <label>From</label>
+          <select id="unit-from" onchange="convertUnits()"></select>
+        </div>
+        <div class="form-group">
+          <label>To</label>
+          <select id="unit-to" onchange="convertUnits()"></select>
+        </div>
+      </div>
+
+      <div class="calc-screen" style="text-align: left; margin-bottom: 16px;">
+        <div class="calc-history-text" id="unit-result-label">Result:</div>
+        <div class="calc-main-text" id="unit-result-val" style="font-size: 1.8rem;">1 Meter = 1.0000 Meter</div>
+      </div>
+
+      <h4 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">All Units Conversion Grid</h4>
+      <div class="unit-grid-overview" id="unit-grid-overview"></div>
+    </div>
+
+    <!-- TAB 5: FINANCE & HEALTH -->
+    <div id="panel-finance" class="tab-panel">
+      <div class="cs-grid">
+        <!-- Loan EMI Calculator -->
+        <div class="cs-card">
+          <h3>Loan EMI Calculator</h3>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>Principal ($):</label><input type="number" id="loan-amount" value="100000"></div>
+            <div class="solver-input-group"><label>Interest (%):</label><input type="number" id="loan-rate" value="7.5" step="0.1"></div>
+            <div class="solver-input-group"><label>Tenure (Yrs):</label><input type="number" id="loan-years" value="15"></div>
+          </div>
+          <button class="solver-btn" onclick="calcLoanEMI()">Calculate EMI</button>
+          <div class="solver-result" id="loan-emi-res">EMI: $927.01 / mo</div>
+        </div>
+
+        <!-- Tip Splitter -->
+        <div class="cs-card">
+          <h3>Tip & Bill Splitter</h3>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>Bill ($):</label><input type="number" id="tip-bill" value="120"></div>
+            <div class="solver-input-group"><label>Tip (%):</label><input type="number" id="tip-pct" value="15"></div>
+            <div class="solver-input-group"><label>People:</label><input type="number" id="tip-people" value="4"></div>
+          </div>
+          <button class="solver-btn" onclick="calcTip()">Calculate Share</button>
+          <div class="solver-result" id="tip-res">$34.50 / person</div>
+        </div>
+
+        <!-- BMI Calculator -->
+        <div class="cs-card">
+          <h3>BMI Health Calculator</h3>
+          <div class="solver-inputs">
+            <div class="solver-input-group"><label>Weight (kg):</label><input type="number" id="bmi-weight" value="70"></div>
+            <div class="solver-input-group"><label>Height (cm):</label><input type="number" id="bmi-height" value="175"></div>
+          </div>
+          <button class="solver-btn" onclick="calcBMI()">Calculate BMI</button>
+          <div class="solver-result" id="bmi-res">BMI: 22.86 (Normal)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complaint Modal -->
+  <div id="complain-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('complain-modal')">&times;</button>
+      <h2 style="color: #fca5a5; margin-bottom: 12px;">Submit Feedback / Complaint</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Direct email routing configured below:</p>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>To:</label>
+        <input type="text" id="complain-to-email" value="support@multicalc.org" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>Subject:</label>
+        <input type="text" id="complain-subject" value="Issue Report - MultiCalc Universal">
+      </div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label>Your Feedback:</label>
+        <textarea id="complain-body" rows="4" placeholder="Describe the issue or feature request..."></textarea>
+      </div>
+      <button class="btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626);" onclick="sendComplaint()">Send Email</button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('settings-modal')">&times;</button>
+      <h2 style="margin-bottom: 16px;">Settings</h2>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>Creator Name</label>
+        <input type="text" id="settings-creator-name" value="Creator Name">
+      </div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label>Support / Complaint Email</label>
+        <input type="email" id="settings-creator-email" value="support@multicalc.org">
+      </div>
+      <button class="btn-primary" style="margin-bottom: 12px;" onclick="saveSettings()">Save Configuration</button>
+      <button class="btn-primary" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5;" onclick="handleSignOut()">Sign Out Session</button>
+    </div>
+  </div>
+
+  <!-- Sliding Calculation History Drawer -->
+  <div id="history-drawer" class="history-drawer">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3>Calculation History</h3>
+      <button class="btn-icon" onclick="toggleHistoryDrawer()">&times;</button>
+    </div>
+    <div class="history-list" id="history-list-container"></div>
+    <button class="btn-icon" style="margin-top: 16px; justify-content: center; color: #fca5a5;" onclick="clearHistory()">Clear History</button>
+  </div>
+
+  <script>
+    /* ====================================================================
+       1. SECURITY, PROTECTION & ACCESS GATE LOGIC
+       ==================================================================== */
+    
+    // Check local session on boot
+    window.addEventListener('DOMContentLoaded', () => {
+      const session = localStorage.getItem('multicalc_signed_in');
+      if (session === 'true') {
+        document.getElementById('auth-overlay').style.display = 'none';
+      }
+      loadSettings();
+      initCanvas();
+      initBitMatrix();
+      initUnitConverter();
+      renderHistory();
+    });
+
+    function handleSignIn() {
+      const email = document.getElementById('auth-email-input').value.trim();
+      if (email.includes('@') && email.includes('.')) {
+        localStorage.setItem('multicalc_signed_in', 'true');
+        document.getElementById('auth-overlay').style.display = 'none';
+      } else {
+        alert('Please enter a valid email address.');
+      }
+    }
+
+    function handleSignOut() {
+      localStorage.removeItem('multicalc_signed_in');
+      closeModal('settings-modal');
+      document.getElementById('auth-overlay').style.display = 'flex';
+    }
+
+    // Frontend Protection Systems
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    document.addEventListener('keydown', (e) => {
+      // Block dev tools shortcuts
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+        (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S'))
+      ) {
+        e.preventDefault();
+        return false;
+      }
+
+      // Keyboard routing for active input vs calculator
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      // Numpad & Standard keys mapping
+      if (!isNaN(e.key) || e.key === '.') calcInput(e.key);
+      else if (e.key === '+') calcInput('+');
+      else if (e.key === '-') calcInput('-');
+      else if (e.key === '*') calcInput('×');
+      else if (e.key === '/') calcInput('÷');
+      else if (e.key === 'Enter' || e.key === '=') calcInput('=');
+      else if (e.key === 'Backspace') calcInput('DEL');
+      else if (e.key === 'Escape') calcInput('AC');
+    });
+
+    // Anti-Debug Execution Loop
+    setInterval(() => {
+      const t0 = performance.now();
+      (function(){ return false; }).constructor("debugger")();
+      const t1 = performance.now();
+      if (t1 - t0 > 100) {
+        console.warn("DevTools inspection detected.");
+      }
+    }, 1000);
+
+
+    /* ====================================================================
+       2. CANVAS ANIMATION ENGINE
+       ==================================================================== */
+    function initCanvas() {
+      const canvas = document.getElementById('bg-canvas');
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const particles = Array.from({ length: 45 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 3 + 1,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+        color: ['#06b6d4', '#d946ef', '#a855f7'][Math.floor(Math.random() * 3)]
+      }));
+
+      function animate() {
+        ctx.fillStyle = 'rgba(7, 9, 19, 0.2)';
+        ctx.fillRect(0, 0, w, h);
+
+        particles.forEach(p => {
+          p.x += p.dx;
+          p.y += p.dy;
+          if (p.x < 0 || p.x > w) p.dx *= -1;
+          if (p.y < 0 || p.y > h) p.dy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = p.color;
+          ctx.fill();
+        });
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+
+    /* ====================================================================
+       3. CALCULATOR & MATHEMATICAL ENGINE
+       ==================================================================== */
+    let currentTab = 'standard';
+    let isDegreeMode = true;
+    let calcState = {
+      expression: '',
+      history: ''
+    };
+
+    const PHYSICS_CONSTANTS = {
+      c: 299792458,
+      g: 9.80665,
+      h: 6.62607015e-34,
+      G: 6.67430e-11,
+      k_B: 1.380649e-23,
+      e: 1.602176634e-19,
+      N_A: 6.02214076e23,
+      R: 8.314462618,
+      eps0: 8.8541878128e-12,
+      mu0: 1.25663706212e-6
+    };
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+      document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+      document.getElementById(`panel-${tabId}`).classList.add('active');
+    }
+
+    function toggleAngleMode() {
+      isDegreeMode = !isDegreeMode;
+      document.getElementById('angle-mode-btn').innerText = isDegreeMode ? 'DEG' : 'RAD';
+    }
+
+    function insertConstant(constKey) {
+      if (PHYSICS_CONSTANTS[constKey] !== undefined) {
+        calcState.expression += PHYSICS_CONSTANTS[constKey];
+        updateDisplay();
+      }
+    }
+
+    function calcInput(val) {
+      if (val === 'AC') {
+        calcState.expression = '';
+        calcState.history = '';
+      } else if (val === 'DEL') {
+        calcState.expression = calcState.expression.slice(0, -1);
+      } else if (val === '=') {
+        if (!calcState.expression) return;
+        try {
+          const res = safeEval(calcState.expression);
+          saveToHistory(calcState.expression + ' = ' + res);
+          calcState.history = calcState.expression + ' =';
+          calcState.expression = String(res);
+        } catch (err) {
+          calcState.expression = 'Error';
+        }
+      } else if (val === 'x²') {
+        calcState.expression += '^2';
+      } else if (val === '√') {
+        calcState.expression += 'sqrt(';
+      } else if (val === 'x^y') {
+        calcState.expression += '^';
+      } else {
+        calcState.expression += val;
+      }
+      updateDisplay();
+    }
+
+    function safeEval(expr) {
+      // Expression Sanitize & Parsing
+      let parsed = expr
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/π/g, 'Math.PI')
+        .replace(/ℯ/g, 'Math.E');
+
+      // Functions mapping
+      parsed = parsed.replace(/sqrt\(/g, 'Math.sqrt(');
+      parsed = parsed.replace(/log\(/g, 'Math.log10(');
+      parsed = parsed.replace(/ln\(/g, 'Math.log(');
+
+      // Trigonometry with DEG / RAD handling
+      if (isDegreeMode) {
+        parsed = parsed.replace(/sin\(([^)]+)\)/g, 'Math.sin(($1)*Math.PI/180)');
+        parsed = parsed.replace(/cos\(([^)]+)\)/g, 'Math.cos(($1)*Math.PI/180)');
+        parsed = parsed.replace(/tan\(([^)]+)\)/g, 'Math.tan(($1)*Math.PI/180)');
+      } else {
+        parsed = parsed.replace(/sin\(/g, 'Math.sin(');
+        parsed = parsed.replace(/cos\(/g, 'Math.cos(');
+        parsed = parsed.replace(/tan\(/g, 'Math.tan(');
+      }
+
+      // Exponents and Factorials
+      parsed = parsed.replace(/\^/g, '**');
+
+      // Evaluate safely
+      const fn = new Function(`return ${parsed}`);
+      const val = fn();
+      return Number.isInteger(val) ? val : parseFloat(val.toFixed(8));
+    }
+
+    function updateDisplay() {
+      const dispId = currentTab === 'physics' ? 'physics-display' : 'std-display';
+      const histId = currentTab === 'physics' ? 'physics-history' : 'std-history';
+
+      document.getElementById(dispId).innerText = calcState.expression || '0';
+      document.getElementById(histId).innerText = calcState.history || '';
+    }
+
+
+    /* ====================================================================
+       4. PHYSICS SOLVERS LOGIC
+       ==================================================================== */
+    function solveKineticEnergy() {
+      const m = parseFloat(document.getElementById('ke-m').value) || 0;
+      const v = parseFloat(document.getElementById('ke-v').value) || 0;
+      const res = 0.5 * m * v * v;
+      document.getElementById('ke-res').innerText = res.toFixed(2) + ' J';
+    }
+
+    function solveForce() {
+      const m = parseFloat(document.getElementById('f-m').value) || 0;
+      const a = parseFloat(document.getElementById('f-a').value) || 0;
+      const res = m * a;
+      document.getElementById('f-res').innerText = res.toFixed(2) + ' N';
+    }
+
+    function solveOhmsLaw() {
+      const i = parseFloat(document.getElementById('ohm-i').value) || 0;
+      const r = parseFloat(document.getElementById('ohm-r').value) || 0;
+      const res = i * r;
+      document.getElementById('ohm-res').innerText = res.toFixed(2) + ' V';
+    }
+
+
+    /* ====================================================================
+       5. COMPUTER SCIENCE ENGINE
+       ==================================================================== */
+    let bitRegister = 0;
+
+    function initBitMatrix() {
+      const container = document.getElementById('bit-matrix-container');
+      container.innerHTML = '';
+      for (let i = 31; i >= 0; i--) {
+        const btn = document.createElement('button');
+        btn.className = 'bit-btn';
+        btn.innerText = '0';
+        btn.id = `bit-${i}`;
+        btn.onclick = () => toggleBit(i);
+        container.appendChild(btn);
+      }
+    }
+
+    function toggleBit(index) {
+      bitRegister ^= (1 << index);
+      updateBitMatrixUI();
+    }
+
+    function updateBitMatrixUI() {
+      const unsignedVal = bitRegister >>> 0;
+      for (let i = 0; i < 32; i++) {
+        const bit = (unsignedVal >> i) & 1;
+        const btn = document.getElementById(`bit-${i}`);
+        if (btn) {
+          btn.innerText = bit;
+          btn.classList.toggle('active', bit === 1);
+        }
+      }
+
+      document.getElementById('bit-dec-val').innerText = unsignedVal;
+      document.getElementById('bit-hex-val').innerText = '0x' + unsignedVal.toString(16).toUpperCase().padStart(8, '0');
+      document.getElementById('bit-bin-val').innerText = unsignedVal.toString(2).padStart(32, '0').match(/.{1,8}/g).join(' ');
+    }
+
+    function convertBases(source) {
+      let val = 0;
+      if (source === 'dec') val = parseInt(document.getElementById('cs-dec').value, 10) || 0;
+      if (source === 'hex') val = parseInt(document.getElementById('cs-hex').value, 16) || 0;
+      if (source === 'bin') val = parseInt(document.getElementById('cs-bin').value, 2) || 0;
+      if (source === 'oct') val = parseInt(document.getElementById('cs-oct').value, 8) || 0;
+
+      if (source !== 'dec') document.getElementById('cs-dec').value = val.toString(10);
+      if (source !== 'hex') document.getElementById('cs-hex').value = val.toString(16).toUpperCase();
+      if (source !== 'bin') document.getElementById('cs-bin').value = val.toString(2);
+      if (source !== 'oct') document.getElementById('cs-oct').value = val.toString(8);
+
+      bitRegister = val;
+      updateBitMatrixUI();
+    }
+
+    function calcSubnet() {
+      const str = document.getElementById('subnet-ip').value.trim();
+      const [ip, cidrStr] = str.split('/');
+      const cidr = parseInt(cidrStr, 10) || 24;
+
+      const mask = ~(Math.pow(2, 32 - cidr) - 1) >>> 0;
+      const maskArr = [(mask>>>24)&255, (mask>>>16)&255, (mask>>>8)&255, mask&255];
+      const usable = Math.pow(2, 32 - cidr) - 2;
+
+      document.getElementById('subnet-res').innerHTML = `
+        <div>Subnet Mask: <strong style="color: var(--cs-color);">${maskArr.join('.')}</strong></div>
+        <div>Network IP: <strong style="color: var(--cs-color);">${ip.split('.').slice(0,3).join('.')}.0</strong></div>
+        <div>Usable Hosts: <strong style="color: var(--accent-cyan);">${usable > 0 ? usable : 0}</strong></div>
+      `;
+    }
+
+
+    /* ====================================================================
+       6. UNIVERSAL 14-CATEGORY UNIT CONVERTER
+       ==================================================================== */
+    const UNIT_DATA = {
+      length: { name: 'Length', units: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.344, yd: 0.9144, ft: 0.3048, in: 0.0254 } },
+      mass: { name: 'Mass / Weight', units: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495, tonne: 1000 } },
+      temp: { name: 'Temperature', custom: true },
+      volume: { name: 'Volume', units: { l: 1, ml: 0.001, m3: 1000, gal: 3.78541, qt: 0.946353 } },
+      area: { name: 'Area', units: { m2: 1, km2: 1000000, ha: 10000, acre: 4046.86, ft2: 0.092903 } },
+      speed: { name: 'Speed', units: { m_s: 1, km_h: 0.277778, mph: 0.44704, knot: 0.514444 } },
+      time: { name: 'Time', units: { s: 1, min: 60, h: 3600, day: 86400, yr: 31536000 } },
+      data: { name: 'Data Storage', units: { B: 1, KB: 1024, MB: 1048576, GB: 1073741824, TB: 1099511627776 } }
+    };
+
+    function initUnitConverter() {
+      const catSelect = document.getElementById('unit-category');
+      catSelect.innerHTML = '';
+      for (let key in UNIT_DATA) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.innerText = UNIT_DATA[key].name;
+        catSelect.appendChild(opt);
+      }
+      populateUnitDropdowns();
+    }
+
+    function populateUnitDropdowns() {
+      const catKey = document.getElementById('unit-category').value;
+      const fromSel = document.getElementById('unit-from');
+      const toSel = document.getElementById('unit-to');
+
+      fromSel.innerHTML = '';
+      toSel.innerHTML = '';
+
+      if (catKey === 'temp') {
+        ['Celsius', 'Fahrenheit', 'Kelvin'].forEach(u => {
+          fromSel.appendChild(new Option(u, u));
+          toSel.appendChild(new Option(u, u));
+        });
+        toSel.selectedIndex = 1;
+      } else {
+        const units = UNIT_DATA[catKey].units;
+        let idx = 0;
+        for (let u in units) {
+          fromSel.appendChild(new Option(u, u));
+          toSel.appendChild(new Option(u, u));
+          if (idx === 1) toSel.selectedIndex = 1;
+          idx++;
+        }
+      }
+      convertUnits();
+    }
+
+    function convertUnits() {
+      const catKey = document.getElementById('unit-category').value;
+      const val = parseFloat(document.getElementById('unit-input-val').value) || 0;
+      const from = document.getElementById('unit-from').value;
+      const to = document.getElementById('unit-to').value;
+
+      let result = 0;
+
+      if (catKey === 'temp') {
+        result = convertTemperature(val, from, to);
+      } else {
+        const units = UNIT_DATA[catKey].units;
+        const baseVal = val * units[from];
+        result = baseVal / units[to];
+      }
+
+      document.getElementById('unit-result-val').innerText = `${val} ${from} = ${result.toFixed(4)} ${to}`;
+      renderUnitGrid(catKey, val, from);
+    }
+
+    function convertTemperature(val, from, to) {
+      if (from === to) return val;
+      let c = val;
+      if (from === 'Fahrenheit') c = (val - 32) * 5 / 9;
+      if (from === 'Kelvin') c = val - 273.15;
+
+      if (to === 'Fahrenheit') return (c * 9 / 5) + 32;
+      if (to === 'Kelvin') return c + 273.15;
+      return c;
+    }
+
+    function renderUnitGrid(catKey, val, from) {
+      const grid = document.getElementById('unit-grid-overview');
+      grid.innerHTML = '';
+
+      if (catKey === 'temp') return;
+
+      const units = UNIT_DATA[catKey].units;
+      const baseVal = val * units[from];
+
+      for (let u in units) {
+        const converted = baseVal / units[u];
+        const card = document.createElement('div');
+        card.className = 'unit-grid-item';
+        card.innerHTML = `<div class="unit-name">${u}</div><div class="unit-val">${converted.toFixed(3)}</div>`;
+        grid.appendChild(card);
+      }
+    }
+
+    function handleSmartQuery() {
+      const q = document.getElementById('unit-smart-query').value.toLowerCase().trim();
+      const match = q.match(/^([\d.]+)\s*([a-z]+)\s*(?:to|in)\s*([a-z]+)$/i);
+      if (match) {
+        const [_, num, fromUnit, toUnit] = match;
+        document.getElementById('unit-input-val').value = num;
+        convertUnits();
+      }
+    }
+
+
+    /* ====================================================================
+       7. FINANCIAL & HEALTH ENGINE
+       ==================================================================== */
+    function calcLoanEMI() {
+      const p = parseFloat(document.getElementById('loan-amount').value) || 0;
+      const r = (parseFloat(document.getElementById('loan-rate').value) || 0) / 12 / 100;
+      const n = (parseFloat(document.getElementById('loan-years').value) || 0) * 12;
+
+      const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+      document.getElementById('loan-emi-res').innerText = `EMI: $${emi.toFixed(2)} / mo`;
+    }
+
+    function calcTip() {
+      const bill = parseFloat(document.getElementById('tip-bill').value) || 0;
+      const tipPct = parseFloat(document.getElementById('tip-pct').value) || 0;
+      const people = parseInt(document.getElementById('tip-people').value, 10) || 1;
+
+      const total = bill * (1 + tipPct / 100);
+      const share = total / people;
+      document.getElementById('tip-res').innerText = `$${share.toFixed(2)} / person`;
+    }
+
+    function calcBMI() {
+      const w = parseFloat(document.getElementById('bmi-weight').value) || 0;
+      const h = (parseFloat(document.getElementById('bmi-height').value) || 0) / 100;
+
+      if (h > 0) {
+        const bmi = w / (h * h);
+        let status = 'Normal';
+        if (bmi < 18.5) status = 'Underweight';
+        else if (bmi >= 25) status = 'Overweight';
+
+        document.getElementById('bmi-res').innerText = `BMI: ${bmi.toFixed(2)} (${status})`;
+      }
+    }
+
+
+    /* ====================================================================
+       8. MODALS, COMPLAIN SYSTEM & HISTORY PERSISTENCE
+       ==================================================================== */
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function saveSettings() {
+      const name = document.getElementById('settings-creator-name').value;
+      const email = document.getElementById('settings-creator-email').value;
+
+      localStorage.setItem('multicalc_creator_name', name);
+      localStorage.setItem('multicalc_creator_email', email);
+
+      document.getElementById('display-creator').innerText = `By: ${name}`;
+      document.getElementById('complain-to-email').value = email;
+
+      closeModal('settings-modal');
+    }
+
+    function loadSettings() {
+      const name = localStorage.getItem('multicalc_creator_name') || 'Creator Name';
+      const email = localStorage.getItem('multicalc_creator_email') || 'support@multicalc.org';
+
+      document.getElementById('settings-creator-name').value = name;
+      document.getElementById('settings-creator-email').value = email;
+      document.getElementById('display-creator').innerText = `By: ${name}`;
+      document.getElementById('complain-to-email').value = email;
+    }
+
+    function sendComplaint() {
+      const to = document.getElementById('complain-to-email').value;
+      const subject = encodeURIComponent(document.getElementById('complain-subject').value);
+      const body = encodeURIComponent(document.getElementById('complain-body').value);
+
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      closeModal('complain-modal');
+    }
+
+    function toggleHistoryDrawer() {
+      document.getElementById('history-drawer').classList.toggle('open');
+    }
+
+    function saveToHistory(entry) {
+      let history = JSON.parse(localStorage.getItem('multicalc_history') || '[]');
+      history.unshift(entry);
+      if (history.length > 30) history.pop();
+      localStorage.setItem('multicalc_history', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history-list-container');
+      const history = JSON.parse(localStorage.getItem('multicalc_history') || '[]');
+      container.innerHTML = history.length ? '' : '<div style="color:var(--text-muted); font-size:0.9rem;">No saved calculations.</div>';
+
+      history.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerText = item;
+        div.onclick = () => {
+          calcState.expression = item.split('=')[0].trim();
+          updateDisplay();
+          toggleHistoryDrawer();
+        };
+        container.appendChild(div);
+      });
+    }
+
+    function clearHistory() {
+      localStorage.removeItem('multicalc_history');
+      renderHistory();
+    }
+  </script>
+</body>
+</html>
